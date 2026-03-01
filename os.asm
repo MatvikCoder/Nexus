@@ -47,7 +47,7 @@ print:
 	ret
 
 msg1 db "Loading...", 0x0D, 0x0A, 0 
-welcome db "Welcome to RedSolar", 0x0D, 0x0A, 0
+welcome db "Welcome to NovaNexus", 0x0D, 0x0A, 0
 
 times 510-($-$$) db 0
 dw 0xAA55
