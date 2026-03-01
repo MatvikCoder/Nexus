@@ -1,6 +1,13 @@
-[org 0x10000]        ; Ядро загружается по адресу 0x10000 (0x1000:0x0000)
+[org 0x0000]     
 
 start:
+  ; Настраиваем сегменты
+  mov ax, 0x1000      ; Сегмент данных как у кода
+  mov ds, ax
+  mov es, ax
+  mov ss, ax
+  mov sp, 0xFFFE      ; Стек
+  
   ; Очистка экрана
   mov ax, 0003h
   int 0x10
@@ -26,7 +33,7 @@ kernel_main:
   je backspace_handler
   
   ; Проверка переполнения буфера
-  cmp byte [buffer_pos], 255
+  cmp byte [buffer_pos], 63
   jge kernel_main
   
   ; Сохраняем символ
@@ -128,7 +135,7 @@ do_reboot:
   call print_string
   mov ah, 0x00
   int 0x16
-  jmp 0xFFFF:0x0000  ; Перезагрузка
+  jmp 0xFFFF:0x0000
 
 ; Функция сравнения строк
 string_compare:
@@ -176,7 +183,7 @@ print_string:
 welcome db "Welcome to NovaNexus OS", 0x0D, 0x0A, 0
 prompt db "Nova> ", 0
 
-buffer times 256 db 0
+buffer times 64 db 0
 buffer_pos db 0
 
 cmd_clear db "clear", 0
