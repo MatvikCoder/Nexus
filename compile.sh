@@ -1,16 +1,18 @@
 #!/bin/bash
 
-# Компиляция загрузчика
+echo "Компиляция загрузчика..."
 nasm -f bin boot.asm -o boot.bin
 
-# Компиляция ядра
+echo "Компиляция ядра..."
 nasm -f bin kernel.asm -o kernel.bin
 
-# Объединение в один образ
+echo "Создание образа..."
 cat boot.bin kernel.bin > os.bin
 
 # Дополняем до размера дискеты (1.44 MB)
-truncate -s 1474560 os.bin
+dd if=/dev/zero of=os.bin bs=512 count=2880 2>/dev/null
+dd if=boot.bin of=os.bin conv=notrunc 2>/dev/null
+dd if=kernel.bin of=os.bin bs=512 seek=1 conv=notrunc 2>/dev/null
 
-# Запуск в QEMU
+echo "Запуск QEMU..."
 qemu-system-x86_64 -drive format=raw,file=os.bin
