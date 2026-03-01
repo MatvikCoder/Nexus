@@ -13,7 +13,7 @@ main_loop:
 	je enterr
 
 	cmp al, 0x08
-	je sexyback
+	je backsp
 	
 	mov ah, 0x0e
 	int 0x10
@@ -26,7 +26,7 @@ enterr:
     mov al, 0x0A
     int 0x10
     jmp main_loop
-sexyback:
+backsp:
     mov ah, 0x0e
     mov al, 0x08
     int 0x10
