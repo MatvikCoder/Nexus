@@ -1,6 +1,8 @@
 [org 0x7c00]
 
 start:
+	mov ax, 0003h
+	int 0x10
 	mov si, msg1
 	call print
 	mov si, welcome
