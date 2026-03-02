@@ -1,47 +1,47 @@
 [org 0x0000]     
 
 start:
-  ; Настраиваем сегменты
-  mov ax, 0x1000      ; Сегмент данных как у кода
+  ; настраиваем сегменты
+  mov ax, 0x1000      ; сегмент данных как у кода
   mov ds, ax
   mov es, ax
   mov ss, ax
-  mov sp, 0xFFFE      ; Стек
+  mov sp, 0xFFFE      ; стек или чизбургер с беконом уфф
   
-  ; Очистка экрана
+  ; очистка экрана
   mov ax, 0003h
   int 0x10
   
-  ; Вывод приветствия
+  ; вывод приветствия
   mov si, welcome
   call print_string
   mov si, prompt
   call print_string
   
-  ; Инициализация буфера
+  ; инициализация жырнасти
   mov byte [buffer_pos], 0
   
 kernel_main:
-  ; Ожидание нажатия клавиши
+  ; ожидание нажатия
   mov ah, 0x00
   int 0x16
 
-  cmp al, 0x0d        ; Enter
+  cmp al, 0x0d        ; ентер
   je process_command
   
-  cmp al, 0x08        ; Backspace
+  cmp al, 0x08        ; бакспасе
   je backspace_handler
   
-  ; Проверка переполнения буфера
+  ; проверка жырнасти буфера
   cmp byte [buffer_pos], 63
   jge kernel_main
   
-  ; Сохраняем символ
+  ; запись в буфере
   movzx bx, byte [buffer_pos]
   mov [buffer + bx], al
   inc byte [buffer_pos]
   
-  ; Выводим символ
+  ; выводим даунёнка
   mov ah, 0x0e
   int 0x10
   jmp kernel_main
@@ -61,30 +61,30 @@ backspace_handler:
   jmp kernel_main
 
 process_command:
-  ; Новая строка
+  ; нью строчка
   mov ah, 0x0e
   mov al, 0x0D
   int 0x10
   mov al, 0x0A
   int 0x10
   
-  ; Добавляем нуль-терминатор
+  ; нуль-терминатор
   movzx bx, byte [buffer_pos]
   mov byte [buffer + bx], 0
   
-  ; Проверка пустой команды
+  ; пустой команда йоу
   cmp byte [buffer_pos], 0
   je show_prompt
   
-  ; Парсим команду
+  ; парсинг уфф парсинг
   mov si, buffer
   call parse_command
   
 show_prompt:
-  ; Сброс буфера
+  ; омайгад буфер похудел
   mov byte [buffer_pos], 0
   
-  ; Вывод приглашения
+  ; приглашение
   mov si, prompt
   call print_string
   jmp kernel_main
@@ -109,35 +109,41 @@ parse_command:
   mov di, cmd_reboot
   call string_compare
   jc do_reboot
+
+  mov di, cmd_popa
+  call string_compare
+  jc do_shutdown
   
-  ; Неизвестная команда
+  ; моя твоя не понимать
   mov si, unknown_cmd
   call print_string
   ret
 
+do_shutdown:
+  mov ax, 0x5307
+  mov bx, 0x0001
+  mov cx, 0x0003
+  int 0x15 ; работа с apm и выключение
+
 do_clear:
   mov ax, 0003h
   int 0x10
-  ret
+  ret ; очистка экрана
 
 do_help:
   mov si, help_text
   call print_string
-  ret
+  ret ; ааа помогите
 
 do_ver:
   mov si, version_text
   call print_string
-  ret
+  ret ; нет это патрик
 
 do_reboot:
-  mov si, reboot_msg
-  call print_string
-  mov ah, 0x00
-  int 0x16
-  jmp 0xFFFF:0x0000
+  jmp 0xFFFF:0x0000 ; перезагрузка
 
-; Функция сравнения строк
+; сравнение строк
 string_compare:
   push si
   push di
@@ -167,7 +173,7 @@ string_compare:
   pop si
   ret
 
-; Функция вывода строки
+; вывод строки
 print_string:
   mov ah, 0x0e
 .loop:
@@ -179,8 +185,8 @@ print_string:
 .done:
   ret
 
-; Данные
-welcome db "Welcome to NovaNexus OS", 0x0D, 0x0A, 0
+; данные
+welcome db "Welcome to NovaNexus", 0x0D, 0x0A, 0
 prompt db "Nova> ", 0
 
 buffer times 64 db 0
@@ -190,12 +196,13 @@ cmd_clear db "clear", 0
 cmd_help db "help", 0
 cmd_ver db "ver", 0
 cmd_reboot db "reboot", 0
+cmd_popa db "shutdown", 0
 
 unknown_cmd db "Unknown command. Type 'help' for available commands.", 0x0D, 0x0A, 0
 help_text db "Available commands:", 0x0D, 0x0A
          db "  clear  - Clear screen", 0x0D, 0x0A
          db "  help   - Show this help", 0x0D, 0x0A
          db "  ver    - Show version", 0x0D, 0x0A
-         db "  reboot - Reboot system", 0x0D, 0x0A, 0
+         db "  reboot - Reboot system", 0x0D, 0x0A
+         db "  shutdown - I think you know what is this", 0x0D, 0x0A, 0
 version_text db "NovaNexus OS version 1.0", 0x0D, 0x0A, 0
-reboot_msg db "Press any key to reboot...", 0x0D, 0x0A, 0
