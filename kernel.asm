@@ -187,7 +187,7 @@ print_string:
 
 ; данные
 welcome db "Welcome to NovaNexus", 0x0D, 0x0A, 0
-prompt db "Nova> ", 0
+prompt db "User> ", 0
 
 buffer times 64 db 0
 buffer_pos db 0
@@ -198,11 +198,11 @@ cmd_ver db "ver", 0
 cmd_reboot db "reboot", 0
 cmd_popa db "shutdown", 0
 
-unknown_cmd db "Unknown command. Type 'help' for available commands.", 0x0D, 0x0A, 0
+unknown_cmd db "Unknown command", 0x0D, 0x0A, 0
 help_text db "Available commands:", 0x0D, 0x0A
          db "  clear  - Clear screen", 0x0D, 0x0A
          db "  help   - Show this help", 0x0D, 0x0A
          db "  ver    - Show version", 0x0D, 0x0A
          db "  reboot - Reboot system", 0x0D, 0x0A
          db "  shutdown - I think you know what is this", 0x0D, 0x0A, 0
-version_text db "NovaNexus OS version 1.0", 0x0D, 0x0A, 0
+version_text db "NovaNexus version 1.0", 0x0D, 0x0A, 0
