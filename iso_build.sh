@@ -7,7 +7,7 @@ dd if=/dev/zero of=floppy.img bs=512 count=2880 2>/dev/null
 # Записываем загрузчик
 dd if=boot.bin of=floppy.img bs=512 count=1 conv=notrunc 2>/dev/null
 
-# Записываем ядро (если есть)
+# Записываем ядро
 if [ -f kernel.bin ]; then
     dd if=kernel.bin of=floppy.img bs=512 seek=1 conv=notrunc 2>/dev/null
 fi
@@ -35,12 +35,12 @@ genisoimage -input-charset utf-8 \
     -f \
     -J \
     -r \
-    -V "MYOS" \
-    -o myos.iso \
+    -V "NOVANEXUS" \
+    -o NovaNexus.iso \
     iso_temp/ 2>/dev/null
 
 echo "=== Результат ==="
-ls -la myos.iso
+ls -la NovaNexus.iso
 
 echo "=== Тест в QEMU ==="
-qemu-system-i386 -cdrom myos.iso
+qemu-system-x86_64 -cdrom NovaNexus.iso
